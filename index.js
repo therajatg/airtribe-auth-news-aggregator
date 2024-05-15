@@ -1,12 +1,12 @@
-import express, { json } from "express";
-import { v4 as uuid } from "uuid";
-import users from "./users.json";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import { Validator } from "./helpers/validator";
-import { verifyToken } from "./middleware/authJWT";
-import fs from "fs";
+const express = require("express");
+const { v4: uuid } = require("uuid");
+const fs = require("fs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const Validator = require("./helpers/validator.js");
+const verifyToken = require("./middleware/authJWT.js");
+const { users } = require("./users.json");
 
 dotenv.config();
 const app = express();
@@ -105,7 +105,22 @@ app.put("/preferences", verifyToken, (req, res) => {
   }
 });
 
-app.get("/news", verifyToken, (req, res) => {});
+app.get("/news", verifyToken, (req, res) => {
+  if (req.user) {
+    const allEndpoints = req.user.preferences.map((preference) => {
+      `https://newsapi.org/v2/top-headlines/sources?category=${preference}&apiKey=${NEWS_API_KEY}`;
+    });
+    Promise.all(allEndpoints)
+      .then((res) => {
+        return res.status(200).json({ news: res });
+      })
+      .catch((err) => {
+        return res.status(500).json({ error: "Something went wrong" });
+      });
+  } else {
+    return res.status(req.status).json({ message: req.message });
+  }
+});
 
 app.listen(PORT, (err) => {
   if (err) {

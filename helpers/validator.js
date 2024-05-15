@@ -1,8 +1,8 @@
 // const { tasks } = require("../users.json");
-import users from "../users.json";
+// import users from "../users.json";
 // 8058771857: Dharmendrfa ji``
 
-export class Validator {
+class Validator {
   static validateUserInfo(userInfo) {
     if (
       userInfo.hasOwnProperty("userName") &&
@@ -45,6 +45,6 @@ export class Validator {
   //   }
 }
 
-// module.exports = Validator;
+module.exports = Validator;
 
 // console.log(Array.isArray(1));

@@ -1,7 +1,9 @@
-import users from "../users.json";
-import jwt from "jsonwebtoken";
+// import users from "../users.json";
+// import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
+const { users } = require("../users.json");
 
-export const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   if (req.headers && req.headers.authorization) {
     jwt.verify(
       req.headers.authorization,
@@ -29,3 +31,5 @@ export const verifyToken = (req, res, next) => {
     next();
   }
 };
+
+module.exports = verifyToken;
