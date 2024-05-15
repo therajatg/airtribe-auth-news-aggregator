@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { Validator } from "./helpers/validator";
+import { verifyToken } from "./middleware/authJWT";
+import fs from "fs";
 
 dotenv.config();
 const app = express();
@@ -62,11 +64,48 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.get("/preferences", (req, res) => {});
+app.get("/preferences", verifyToken, (req, res) => {
+  if (req.user) {
+    return res.status(200).json({ preferences: req.user.preferences });
+  } else {
+    return res.status(req.status).json({ message: req.message });
+  }
+});
 
-app.put("/preferences", (req, res) => {});
+app.put("/preferences", verifyToken, (req, res) => {
+  if (req.user) {
+    const { preferencesReceived } = req.body;
+    const validatePreferences =
+      Validator.validatePreferences(preferencesReceived);
+    if (validatePreferences.status) {
+      const updatedUsers = users.map((user) =>
+        user.id === req.user.id
+          ? { ...user, preferences: preferencesReceived }
+          : user
+      );
+      fs.writeFile(
+        "./users.json",
+        updatedUsers,
+        { encoding: "utf-8", flag: "w" },
+        (err, data) => {
+          if (err) {
+            return res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            return res
+              .status(200)
+              .json({ message: "preferences updated successfully" });
+          }
+        }
+      );
+    } else {
+      return res.status(400).json({ error: validatePreferences.message });
+    }
+  } else {
+    return res.status(req.status).json({ message: req.message });
+  }
+});
 
-app.get("/news", (req, res) => {});
+app.get("/news", verifyToken, (req, res) => {});
 
 app.listen(PORT, (err) => {
   if (err) {

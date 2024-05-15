@@ -20,6 +20,19 @@ export class Validator {
     }
   }
 
+  static validatePreferences(preferences) {
+    if (!Array.isArray(userInfo["preferences"])) {
+      return { status: false, message: "Please send in the list format" };
+    } else if (userInfo["preferences"].length == 0) {
+      return {
+        status: false,
+        message: "At least one preference should bs there",
+      };
+    } else {
+      return { status: true, message: "Validated successfully" };
+    }
+  }
+
   //   static validateTaskId(taskId) {
   //     if (tasks.find((task) => task.id == taskId)) {
   //       return { status: true, message: "taskId Validated Successfully" };
