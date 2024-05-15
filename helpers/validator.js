@@ -21,9 +21,9 @@ class Validator {
   }
 
   static validatePreferences(preferences) {
-    if (!Array.isArray(userInfo["preferences"])) {
+    if (!Array.isArray(preferences)) {
       return { status: false, message: "Please send in the list format" };
-    } else if (userInfo["preferences"].length == 0) {
+    } else if (preferences.length == 0) {
       return {
         status: false,
         message: "At least one preference should bs there",

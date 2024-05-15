@@ -2,12 +2,15 @@
 // import jwt from "jsonwebtoken";
 const jwt = require("jsonwebtoken");
 const { users } = require("../users.json");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const verifyToken = (req, res, next) => {
+  // console.log("req.headers.authorization", req.headers.authorization);
   if (req.headers && req.headers.authorization) {
     jwt.verify(
       req.headers.authorization,
-      process.env.API_SECRET,
+      process.env.JWT_SECRET,
       (err, decoded) => {
         if (err) {
           req.user = undefined;
@@ -15,7 +18,7 @@ const verifyToken = (req, res, next) => {
           req.status = 403;
           next();
         } else {
-          const user = users.find((user) => (user.id = decoded.id));
+          const user = users.find((user) => user.id === decoded.id);
           req.user = user;
           req.message =
             "Found the user successfully, user has valid login token";
